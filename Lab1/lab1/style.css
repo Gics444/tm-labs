@@ -3,7 +3,7 @@
 body {
     font-family: 'Open Sans', sans-serif;
     font-weight: lighter;
-    background: rgb(49,41,22);
+    background: white;
     overflow: hidden;
 }
 
@@ -106,7 +106,7 @@ h2 {
 
 p {
     font-size: 13pt;
-    color: rgb(225,144,96);
+    color: #888;
     line-height: 1.7em;
     font-weight: lighter;
 }
@@ -220,7 +220,7 @@ img {
 */
 
 body.dark {
-    background: rgb(49,41,22);
+    background: black;
     color: white;
 }
 
@@ -229,11 +229,11 @@ body.dark {
 }
 
 .dark .container {
-    background: rgb(49,41,22);
+    background: black;
 }
 
 .dark .written-in-ink {
-    background: rgb(49,41,22);
+    background: black;
 }
 
 .dark a {
@@ -258,5 +258,5 @@ body.dark {
 }
 
 .dark #controls {
-    background: rgb(49,41,22);
+    background: black;
 }
