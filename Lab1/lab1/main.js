@@ -70,7 +70,7 @@
                 // Detect tags of the form "X: Y". Currently used for IMAGE and CLASS but could be
                 // customised to be used for other things too.
                 var splitTag = splitPropertyTag(tag);
-
+                
                 // AUDIO: src
                 if( splitTag && splitTag.property == "AUDIO" ) {
                   if('audio' in this) {
@@ -84,6 +84,7 @@
 
                 // AUDIOLOOP: src
                 else if( splitTag && splitTag.property == "AUDIOLOOP" ) {
+                    
                   if('audioLoop' in this) {
                     this.audioLoop.pause();
                     this.audioLoop.removeAttribute('src');
