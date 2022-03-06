@@ -105,10 +105,8 @@ VAR GoSleep = false
 VAR ExistenceFeePaid = false
 VAR TravelFeePaid = false
 VAR FunkConsumed = false
-# AUDIOLOOP: test.mp3
-+ [Start]-> waking_up
 
-    
++ [Start]-> waking_up
 
 === function ShowTime(t) ===
     ~ temp hour = INT(t/60)
@@ -245,7 +243,7 @@ VAR FunkConsumed = false
     <hr>
 }
 
-#audio: insert appropriate soundtrack image:black screen
+#AUDIOLOOP: soundtrack.mp3
 {~You are sitting at a cafe, talking to your friends about recent events in the city and enjoying above average cuisine…but then you wake up and realize that you don’t have any friends, all local cafes went out of business due to the lack of paying customers.|You are rushing through the storm with your fellow sailors on your employers cargo ship, sea creatures washing aboard from the waves, suddenly one of your coworkers falls overboard…but then you wake up and realize that all of the large water bodies are too toxic for any sea life to thrive there, also you are unemployed… yet.|You are walking through the woods, collecting curious looking herbs and odd looking berries, after some time you hear something in nearby bushes. You decide to take a closer look, but while you are approaching a wild animal jumps at you…but then you wake up and realize that due to aggressive deforestation there are no woods and no woodland animals to ambush you on the island. Good.|Nothing. Emptiness. Desolation. Void… but then you wake up realizing that you’ll have to continue existing today.|You were preparing for this your whole life, you stretch your extremities, take a deep breath and start running, preparing to jump. You are about to jump…but then you wake up and realize that you’d probably get tired even from stretching your extremities, yet alone running or jumping.}
 
     + Open your eyes 
@@ -271,7 +269,8 @@ VAR FunkConsumed = false
                         -> alarm_rings
                 
             =alarm_rings
-                #  audio: alarm image: spiral clock(glowing)
+                # AUDIO: sounds/clockRing.mp3
+                # image: spiral clock(glowing)
                 Suddenly the spiral clock starts buzzing that loud alarm tone. Time to wake up and turn this thing off.
                     + Ignore the alarm 
                     -> ignore_alarm
@@ -279,7 +278,9 @@ VAR FunkConsumed = false
                     -> turn_off_alarm_and_wake_up
             
             =ignore_alarm
-            # audio: quieter alarm image: black screen
+
+            # AUDIO: sounds/clockRing.mp3
+            # image: black screen
                 ~Time += RANDOM(10,30)
                 Being way too tired to wake up right now. Ignoring the alarm you try to fall back into slumber…
                 + [What is that noise] 
@@ -287,6 +288,7 @@ VAR FunkConsumed = false
             
             =noise_complain
                 # audio: quieter alarm + smacking through the wall sound
+                # AUDIO: sounds/knock.mp3
                 … until you hear your neighbor screaming through the wall: “Turn that @\#!\*@!+ alarm off, you lazy schmuck!”.
                 ~ NoiseComplain = true
                 
@@ -305,9 +307,13 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         -> look_around_apartment
     
     =look_around_apartment
-        # audio: muffled rain image: apartment
+        
+        # audio: muffled rain
         Taking a look around. This whole apartment consists from just one square room, where besides your bed you can see: a huge metal machine with the label “PCT Personal Citizen Terminal ™ ”, a small drawer with some money on it, a door leading out of your apartment, a small gray fridge, a potted plant on a tall stool, a mirror, and a double glass door leading to the balcony. 
-            +[Continue] 
+            + [Continue] 
+            
+            # IMAGE: images/apartment.png
+            <br>
                 {ShowTimeMoney()}
                 {
                     -ArrestedOutside:
@@ -327,7 +333,7 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                     -GoSleep:
                         ->pre_next_day
                 }
-        # image: PCT
+        # IMAGE: images/pct.png
         You approach the PCT(Personal Citizen Terminal ™)
         ++ Press the power button 
             -> apartment_pre_use_pct
