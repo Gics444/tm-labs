@@ -14,26 +14,37 @@ VAR WorkFloor = 0
 VAR WorkHallway = ""
 VAR WorkMessageChecked = false
 
-VAR InvestInLGCDP = false
+VAR WantsToInvestInLGCDP = false
 VAR InvestPriceLGCDP = 0
 VAR InvestedInLGCDP = false
 
 VAR NeedsMap = false
 VAR MapInDrawer = false
+{RANDOM(1,2):
+-1: ~MapInDrawer = true
+-2: ~MapInDrawer = false
+}
 VAR HasMap = false
 VAR MapRequest = false
 VAR MapRequestDay = 0
 
 VAR Accessory = ""
 
-VAR FridgeGooTea = 1
+VAR FridgeGooTea = 0
+~FridgeGooTea = RANDOM(0,1)
 VAR FridgeIceScream = 0
+~FridgeIceScream = RANDOM(0,1)
 VAR FridgeNoodles = 0
 VAR FridgeVoidBiscuits = 0
+~FridgeVoidBiscuits = RANDOM(0,2)
 VAR FridgeCrippleCrackers = 0
-VAR FridgeWater = 2
+~FridgeCrippleCrackers = RANDOM(0,1)
+VAR FridgeWater = 0
+~FridgeWater = RANDOM(0,3)
 VAR FridgeInfiniteParty = 0
+~FridgeInfiniteParty = RANDOM(0,1)
 VAR FridgeFuzzyBuzz = 0
+~FridgeFuzzyBuzz = RANDOM(0,1)
 VAR FridgeBottleInAJar = 0
 VAR FridgeJarFlower = 0
 
@@ -49,12 +60,36 @@ VAR InventoryBottleInAJar = 0
 
 VAR ConsumedNutrients = 0
 
-VAR AtHome = true
+VAR AtHome = false
 
 VAR HasSpiralFlower = false
 VAR PlantState = 0
 VAR PlantStateNextDay = 0
 
+VAR PermissionDeniedNeighboringDistrict = false
+VAR Worked = false
+
+VAR GooTeaPrice = 0
+~GooTeaPrice = RANDOM(30, 50)
+VAR IceScreamPrice = 0
+~IceScreamPrice = RANDOM(35, 60)
+VAR NoodlesPrice = 0
+~NoodlesPrice = RANDOM(50, 90)
+VAR VoidBiscuitsPrice = 0
+~VoidBiscuitsPrice = RANDOM(25, 30)
+VAR CrippleCrackersPrice = 0
+~CrippleCrackersPrice = RANDOM(45, 80)
+VAR WaterPrice = 0
+~WaterPrice = RANDOM(10, 20)
+VAR InfinitePartyPrice = 0
+~InfinitePartyPrice = RANDOM(120, 180)
+VAR FuzzyBuzzPrice = 0
+~FuzzyBuzzPrice = RANDOM(90, 120)
+VAR BottleInAJarPrice = 0
+~BottleInAJarPrice = RANDOM(10,15)
+
+VAR ArrestedOutside = false
+VAR GoSleep = false
 -> waking_up
 
 === function ShowTime(t) ===
@@ -68,7 +103,15 @@ VAR PlantStateNextDay = 0
     ~ return (hour + minutes)
 
 === function ShowTimeMoney ===
-    ~ return "<b>Time: " + ShowTime(Time) + "; Money: " + Money + "GGT</b>"
+    <b>Time: {ShowTime(Time)}; Money: {Money} GGT</b>
+    <hr>
+    {
+        -!AtHome && Time > CloseOutsideTime:
+            ~ArrestedOutside = true
+            
+        -AtHome && Time > BedTime:
+            ~GoSleep = true
+    }
 
 === function AnythingInFridge ===
     ~ return FridgeGooTea || FridgeIceScream || FridgeNoodles || FridgeVoidBiscuits || FridgeCrippleCrackers || FridgeWater || FridgeInfiniteParty || FridgeFuzzyBuzz || FridgeBottleInAJar || FridgeJarFlower
@@ -85,6 +128,16 @@ VAR PlantStateNextDay = 0
     }
     ~Money -= x
     ~ return x
+    
+=== function EnoughMoney(productPrice, productName)
+{Money >= productPrice:
+    After a moment of hesitation you insert your wrist into the machine and immediately are notified by a robotic voice “Transaction complete, {productPrice} amount of GGTs was taken from your account.”. Now {productName} is legally yours.
+    ~return true
+-else:
+    You don't have enough GGTs for {productName}
+    ~return false
+}
+
 ===waking_up===
 ~NoiseComplain = false
 ~Dressed = false
@@ -106,15 +159,11 @@ VAR PlantStateNextDay = 0
 }
 ~WorkMessageChecked = false
 
-~InvestInLGCDP = false
+~WantsToInvestInLGCDP = false
 ~InvestPriceLGCDP = RANDOM(10,20)
 ~InvestedInLGCDP = false
 
 ~NeedsMap = false
-{RANDOM(1,2):
--1: ~MapInDrawer = true
--2: ~MapInDrawer = false
-}
 ~HasMap = false
 
 ~Accessory = "Nothing"
@@ -125,16 +174,22 @@ VAR PlantStateNextDay = 0
 ~InventoryNoodles = 0
 ~InventoryVoidBiscuits = 0
 ~InventoryCrippleCrackers = 0
-~InventoryWater = 3
+~InventoryWater = 0
 ~InventoryInfiniteParty = 0
 ~InventoryFuzzyBuzz = 0
-~InventoryBottleInAJar = 1
+~InventoryBottleInAJar = 0
 
 ~ConsumedNutrients = 0
 
 ~AtHome = true
 
 ~HasSpiralFlower = false
+
+~PermissionDeniedNeighboringDistrict = false
+~Worked = false
+
+~ArrestedOutside = false
+~GoSleep = false
 
 {Day > 1:
     Day {Day}
@@ -155,11 +210,9 @@ VAR PlantStateNextDay = 0
     
     
         + Sleep some more 
-            <hr>
             -> sleep_some_more
         
         + Turn off the alarm and wake up 
-            <hr>
             -> turn_off_alarm_and_wake_up
         
             =sleep_some_more
@@ -173,10 +226,8 @@ VAR PlantStateNextDay = 0
                 #  audio: alarm image: spiral clock(glowing)
                 Suddenly the spiral clock starts buzzing that loud alarm tone. Time to wake up and turn this thing off.
                     + Ignore the alarm 
-                    <hr>
                     -> ignore_alarm
                     + Turn off the alarm and wake up 
-                    <hr>
                     -> turn_off_alarm_and_wake_up
             
             =ignore_alarm
@@ -195,7 +246,6 @@ VAR PlantStateNextDay = 0
                 ~SocialScore -=5
                 
                 + Turn off the alarm and wake up 
-                    <hr>
                     -> turn_off_alarm_and_wake_up
                 
 ===turn_off_alarm_and_wake_up===
@@ -211,46 +261,85 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         Taking a look around. This whole apartment consists from just one square room, where besides your bed you can see: a huge metal machine with the label “PCT Personal Citizen Terminal ™ ”, a small drawer with some money on it, a door leading out of your apartment, a small gray fridge, a potted plant on a tall stool, a mirror, and a double glass door leading to the balcony. 
             +[Continue] 
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 -> apartment_choices
     
 ===apartment_choices===
     You decide to...
     + Use PCT  
         {ShowTimeMoney()}
-        <hr> 
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         # image: PCT
         You approach the PCT(Personal Citizen Terminal ™)
         ++ Press the power button 
-            <hr>
             -> apartment_pre_use_pct
     
     + Open drawer
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_use_drawer
     
     + Go to the fridge
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_use_fridge
     + Check plant
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_check_plant
     + Look in the mirror
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_look_in_the_mirror
     + Check the balcony
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_check_balcony
     + Check inventory
         -> check_inventory(-> apartment_choices)
     + {Dressed} Leave apartment
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> leave_apartment
         
     =apartment_pre_use_pct
@@ -258,26 +347,51 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         With a light press of the power button the machine bursts into life, it’s low frequency screen starts flashing, presenting you with the option to check your inbox or submit a request. 
         ~Time += 1
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_use_pct
         
 ===apartment_use_pct===
     PCT Screen:
     + Check inbox 
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> check_pct_inbox
-    + {InvestInLGCDP && !InvestedInLGCDP}Invest in Low Grade Citizen Disposal Program™ (LGCDP) \[Requires {InvestPriceLGCDP} GGT\]
+    + {WantsToInvestInLGCDP && !InvestedInLGCDP}Invest in Low Grade Citizen Disposal Program™ (LGCDP) \[Requires {InvestPriceLGCDP} GGT\]
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> invest_in_lgcdp
     + {NeedsMap && !HasMap && !MapRequest}Submit a map request 
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> map_request
     + Turn off PCT 
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_choices
     
         =check_pct_inbox
@@ -285,7 +399,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
             +{WorkMessageChecked} Go back 
                 ~Time += 1
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 -> apartment_use_pct
             + Open message 
                 <hr>
@@ -303,17 +422,27 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 —
                 
                 It would be a good idea to not miss this offer.
-            {MapRequest && MapRequestDay > Day :
+            {MapRequest && MapRequestDay < Day :
                 !!
                 There is also a notification that a map request on this PCT was approved. 
                 ++ Print a map 
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     -> print_map
             }
             + Go back 
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 -> apartment_use_pct
         
         =invest_in_lgcdp
@@ -329,7 +458,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
             + [Continue] 
                 ~Time += 1
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 -> apartment_use_pct
             
         =map_request
@@ -340,7 +474,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
             ~Time += 1
             +[Continue] 
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 -> apartment_use_pct
         
         =print_map
@@ -350,7 +489,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
             ~NeedsMap = false
             +[Continue] 
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 -> apartment_use_pct
                 
 ===apartment_use_drawer===
@@ -360,17 +504,32 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         Under accessories there is a small map of your district. Useful.
         + Take the map
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             -> take_map_drawer
     }
     + {!Dressed} Put on a pair of dark pants and a gray shirt
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         ->dress
     + Close drawer
         ~Time += 1
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         ->apartment_choices
         
     =take_map_drawer
@@ -392,26 +551,46 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
             ~Accessory = "Red tie"
             let’s show everyone you mean business.
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             ->apartment_use_drawer
         + Orange tie with black stripes
             ~Accessory = "Orange tie with black stripes"
             #image orange tie
             the orange one looks good, nothing wrong with going a little funky.
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             ->apartment_use_drawer
         + Blue butterfly tie
             ~Accessory = "Blue butterfly tie"
             #image blue tie
             a stylish blue butterfly tie, it just looks good on you.
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             ->apartment_use_drawer
         + Nothing
             {~why bother|you are already beautiful|let’s keep it simple}.
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             ->apartment_use_drawer
 
 ===apartment_use_fridge===
@@ -419,7 +598,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     You approach the small gray fridge.
     + Open fridge 
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         ->open_fridge
     =open_fridge
         #image: fridge with contents audio: fridge opens
@@ -435,7 +619,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Take Goo Tea
                     ~Time += 0.5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     -> take_goo_tea
             }
             {FridgeIceScream: 
@@ -443,7 +632,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Take Ice Scream
                 ~Time += 0.5
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 -> take_ice_scream
             }
             {FridgeNoodles: 
@@ -451,7 +645,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Take Can of Spiral Noodles
                     ~Time += 0.5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     -> take_noodles
             }
             {FridgeVoidBiscuits: 
@@ -459,7 +658,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Take Void Biscuits({FridgeVoidBiscuits})
                     ~Time += 0.5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     -> take_void_biscuits
             }
             {FridgeCrippleCrackers: 
@@ -467,7 +671,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Take Cripple Crackers
                     ~Time += 0.5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     -> take_cripple_crackers
             }
             {FridgeWater: 
@@ -475,7 +684,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Take Water
                     ~Time += 0.5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     -> take_water
             }
             {FridgeInfiniteParty: 
@@ -483,7 +697,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Take "Infinite Party"
                     ~Time += 0.5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     -> take_infinite_party
             }
             {FridgeFuzzyBuzz: 
@@ -491,7 +710,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Take "Fuzzy Buz"
                     ~Time += 0.5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     -> take_fuzzy_buz
             }
             {FridgeBottleInAJar: 
@@ -499,7 +723,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Take Bottle in a jar({FridgeBottleInAJar})
                     ~Time += 0.5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     -> take_jar
             }
             {FridgeJarFlower:
@@ -507,7 +736,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 + Inspect the flower
                     ~Time += 0.5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 -> inspect_flower_jar
             }
         -else:
@@ -556,7 +790,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         + Close fridge
         ~Time += 0.5
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         ->apartment_choices
         
         =inspect_flower_jar
@@ -567,6 +806,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
             It looks like very beautiful and without any signs of withering, maybe you should change proffession?
             + Put it back
                 {ShowTimeMoney()}
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 ->fridge_contents
         
 ===take_goo_tea
@@ -753,7 +998,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
 ===check_inventory(-> location)
     ~Time += 0.5
     {ShowTimeMoney()}
-        <hr>
+    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         Your belongings:
         
         {AnythingInInventory():
@@ -811,7 +1061,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         + Go back
         ~Time += 0.5
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> location
 
 ===consume_goo_tea(location)
@@ -871,7 +1126,7 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     +[Continue]
     
     ~InventoryInfiniteParty -= 1
-    ~Time += 123
+    ~Time += RANDOM(123, 169)
     ->check_inventory(location)
     
 ===consume_fuzzy_buz(location)
@@ -910,7 +1165,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
             A beautiful spiral flower lays atop of a stem with two lively leaves.
             + Take the spiral flower
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 ->take_spiral_flower
         -else:
             You took the spiral flower from its top.
@@ -924,13 +1184,23 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     + {InventoryWater} Water the plant
         ~Time += 1
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         ->water_plant
     + Go back
         You leave the plant to take the responsibility for its own existence.
         ~Time += 1
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_choices
     
     =water_plant
@@ -945,26 +1215,41 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         You took a beautiful spiral flower from your potted plant. It's better to store it in a cold place in some sort of container or a transparent jar.
         +{InventoryBottleInAJar} Use bottle in a jar to store the flower
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             -> use_jar(->apartment_check_plant)
         + Do nothing
             Since you don't have a good container to store the flower, you let it be.
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             -> apartment_check_plant
 
 ===apartment_look_in_the_mirror===
     # image: player + clothes + accesory audio: silence
     You approach the mirror and take a good look. In the mirror you see a tall figure with a spiral face with medium length dense black hair naturally combed backwards. Your head is attached to MK-45 medium performance body model via the neck magnetic connector. Your arms look like long noodles and have 3 long fingers at the end.
     {Dressed:
-        You are wearing dark pants and a gray shirt with [ACCESSORY] around your neck.
+        You are wearing dark pants and a gray shirt with {Accessory} around your neck.
     -else:
         Your mechanical body is naked at the moment.
     }
     + Go back
         ~Time += 1
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_choices
 
 ===apartment_check_balcony===
@@ -973,7 +1258,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     + Go back
         ~Time += 1
         {ShowTimeMoney()}
-        <hr>
+        {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         -> apartment_choices
         
 ===leave_apartment===
@@ -989,9 +1279,136 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
 
 ===outside_with_map
     # image: map audio: rain
-        Now that you’ve got a map of this district, navigation to the points of interest is now possible. On the map there are: a few convenience stores nearby where you can buy GG approved nutritional and household products, access points to neighboring districts and most importantly The Factory ™ . There are also other locations on the map like public areas and some narrowly specialized service providers, but you won’t have time to see them today.
-    -> DONE
+    Now that you’ve got a map of this district, navigation to the points of interest is now possible. On the map there are: a few convenience stores nearby where you can buy GG approved nutritional and household products, access points to neighboring districts and most importantly The Factory ™ . There are also other locations on the map like public areas and some narrowly specialized service providers, but you won’t have time to see them today.
+    + Go back home
+            ~Time += 2
+            {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+            Soaking wet from the heavy rain, you return to your apartment block, taking a long climb up the stairs till you reach the door of your apartment. While you enter your room you realize that all the heat generated by your body while climbing dried up your clothes.
+            #image: black screen audio: fading rain sound + going up the stairs
+            -> apartment_choices
+    + {!PermissionDeniedNeighboringDistrict}Go visit neighboring district
+        ~Time += 10
+            {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+        -> visit_neighboring_district
+    + Check out nearby convenience store
+        ~Time += RANDOM(3, 7)
+            {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+        -> store
+    + {!Worked && Time < 1020}Go to work
+        -> work
+        
+    =visit_neighboring_district
+        # image: district border audio:steps in rain
+        Having the opportunity you decide to investigate the neighboring district. After some time you reach the district's border: a tall reinforced concrete wall with a sturdy metal gate at the checkpoint. 
+        + Approach the gate
+            # image:guard audio: STOP RIGHT THERE!
+            While advancing to the gate you are stopped by a nearby guard and briefly get interrogated, not giving any definitive answer to why you would want to leave the district. The guard, unsatisfied with your answers, takes your hand and scans the barcode on your wrist and tells you to leave if you don’t have any official business in the other district.
+            {~PermissionDeniedNeighboringDistrict = true}
+            ~Time += 5
+            {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+            -> outside_with_map
+        + Wander somewhere else
+            ~Time += 1
+            {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+            -> outside_with_map
+            
+===store
+    # image: convenience store audio:1975 grocery store music + silent rain
+    Soaked in rain, you enter a nearby convenience store. The scenery is filled with a guard at the entrance, repeating aisles of GG approved products and a self checkout terminal, walls are gray and partially missing paint, revealing naked white bricks under it, besides that, the store seems to be in a good condition, even playing a cheerful tune on repeat.
+    + Look at goods in stock
+        ->store_goods
+    + Return outside
+        ->outside_with_map
+        
+    =store_goods
+        ~Time += 1
+            {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+        Taking a closer look at the store shelves you observe a following selection of products:
+        \- “Goo-tea” First of a kind antigravity goopy refreshment.({GooTeaPrice} GGT)
+        \- “Ice-scream” Now with 20% more scream and 5% sweeter ice! ({IceScreamPrice} GGT)
+        \- “Can of spiral noodles” Unspiral your hunger.({NoodlesPrice} GGT)
+        \- “void-biscuits” Now with negative nutritional value!({VoidBiscuitsPrice} GGT)
+        \- “Cripple-crackers” Eat the crippled, consume the poor!({CrippleCrackersPrice} GGT)
+        \- “Water (Moist brand”) Cool your body, relax your mind.({WaterPrice} GGT)
+        \- “Liquid funk: Infinite party” Need a trip? Just take a sip!({InfinitePartyPrice} GGT)
+        \- “Liquid funk: Fuzzy buz” Need a break? Then fuzz you take!({FuzzyBuzzPrice} GGT)
+        \- “Bottle in a jar” For all your household needs.({BottleInAJarPrice} GGT)
+        + Buy Goo-tea
+            {EnoughMoney(GooTeaPrice, "Goo-tea")}
+            ++Continue
+                -> store
+        + Buy Ice-scream
+            {EnoughMoney(IceScreamPrice, "Ice-scream")}
+            ++Continue
+                -> store
+        + Buy Can of spiral noodles
+            {EnoughMoney(NoodlesPrice, "Can of spiral noodles")}
+            ++Continue
+                -> store
+        + Buy void-biscuits
+            {EnoughMoney(VoidBiscuitsPrice, "void-biscuits")}
+            ++Continue
+                -> store
+        + Buy Cripple-crackers
+            {EnoughMoney(CrippleCrackersPrice, "Cripple-crackers")}
+            ++Continue
+                -> store
+        + Buy Water (Moist brand)
+            {EnoughMoney(WaterPrice, "Water (Moist brand)")}
+            ++Continue
+                -> store
+        + Buy Liquid funk: Infinite party
+            {EnoughMoney(InfinitePartyPrice, "Liquid funk: Infinite party")}
+            ++Continue
+                -> store
+        + Buy Liquid funk: Fuzzy buz
+            {EnoughMoney(GooTeaPrice, "Goo-tea")}
+            ++Continue
+                -> store
+        + Buy Bottle in a jar
+            {EnoughMoney(GooTeaPrice, "Goo-tea")}
+            ++Continue
+                -> store
     
+===work
+->outside_with_map
+
 ===outside_without_map
     # image: black screen audio: rain
         ~NeedsMap = true
@@ -999,28 +1416,48 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         + Go back home
             ~Time += 2
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             Soaking wet from the heavy rain, you return to your apartment block, taking a long climb up the stairs till you reach the door of your apartment. While you enter your room you realize that all the heat generated by your body while climbing dried up your clothes.
             #image: black screen audio: fading rain sound + going up the stairs
             -> apartment_choices
         + Ask for directions
             ~Time += RANDOM(3,6)
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             -> ask_for_directions
         + Look around by yourself
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             # image: black screen audio: rain and footsteps
             You start walking through narrow streets surrounded by tall pyramid shaped buildings, not unlike your own apartment complex, there are not many local businesses in this area, just a few narrowly specialized shops and repair services.
             ~Time += RANDOM(2,15)
             {ShowTimeMoney()}
-            <hr>
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
             ~temp x = RANDOM(1,10)
             {
-                -x <= 3:
+                -x <= 2:
                     -> info_banner
-                -x >= 6:
+                -x >= 8:
                     -> aimless_wander
                 -else:
                     -> shady_alley
@@ -1033,12 +1470,22 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 ++ Follow the person's suggestion
                     ~Time += 5
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     ->info_banner
                 ++ Go back
                     ~Time += 2
                     {ShowTimeMoney()}
-                    <hr>
+                    {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                     The person looks shady and you decided to be safe and go back to where you started.
                     ->outside_without_map
         =info_banner
@@ -1050,7 +1497,12 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 ~HasMap = true
                 ~NeedsMap = false
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 ->outside_with_map
                 
         =aimless_wander
@@ -1074,10 +1526,17 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         =give_money_to_beggar
             #image: person in the alley audio: muffled rain
             “Sure, i can spare some.” you say. The man shows you his wrist with the standard 24 digit barcode on it, you scan it and transfer {GiveMoneyToShadyBeggar()} GGT on his account. “Thanks, pal” he says, dropping a rusty metal pipe on the ground and sitting back at the wall. Perhaps you should invest more in the Low Grade Citizen Disposal Program™ in the future. (This can be done from PCT)
+            ~WantsToInvestInLGCDP = true
+            
             + Go back
                 ~Time += RANDOM(3,6)
                 {ShowTimeMoney()}
-                <hr>
+                {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
                 -> outside_without_map
                 
         
@@ -1086,10 +1545,21 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     +...
     In the middle of your sentence, the shady figure swiftly and precisely stabs you with a piece of rusty metal pipe. “Too bad…” he says and runs out of the alley. Collapsing on the ground you hear a whistle as a bunch of guard’s start chasing the man… he probably won’t make it far… and so do you.
 
-    <b>GAME OVER<b> 
+    <b>GAME OVER</b> 
     Stabbed with a rusty pipe in a shady alley by a homeless man, at least he’ll get arrested, right?
     ->next_day
 
+===ENDING_arrested_for_late_outside
+    + ...?
+    <b> GAME OVER </b>
+    2 surveillance robots caught you for being outside after {ShowTime(CloseOutsideTime)}, you will be relocated to the re-education camp until we decide that you are fit to return into society.
+    ->next_day
+
+===pre_next_day
+    + (...yawn)
+    It's getting too late and you decide to go to sleep
+    ->next_day
+    
 ===next_day
     ~PlantState = PlantStateNextDay
     +PROCEED
@@ -1097,7 +1567,6 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         <big><b>Project Spiral 001: Citizen Testing District<big><b>
         SEND ANOTHER CITIZEN FOR TESTING?
         ++ YES
-            <hr>
             ->waking_up
         ++ NO
             GOODBYE
