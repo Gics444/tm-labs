@@ -68,6 +68,17 @@ VAR PlantStateNextDay = 0
 
 VAR PermissionDeniedNeighboringDistrict = false
 VAR Worked = false
+VAR LateForWork = false
+VAR Tresspasser = false
+VAR HourlyPay = 0
+~HourlyPay = RANDOM (30,50)
+VAR KnowsHowToWork = false
+VAR Fired = false
+VAR TravelStreamFee = 0
+~TravelStreamFee = RANDOM(20,40)
+VAR TravelStreamUsedTimes = 0
+
+VAR WalkedTimes = 0
 
 VAR GooTeaPrice = 0
 ~GooTeaPrice = RANDOM(30, 50)
@@ -90,7 +101,14 @@ VAR BottleInAJarPrice = 0
 
 VAR ArrestedOutside = false
 VAR GoSleep = false
--> waking_up
+
+VAR ExistenceFeePaid = false
+VAR TravelFeePaid = false
+VAR FunkConsumed = false
+# AUDIOLOOP: test.mp3
++ [Start]-> waking_up
+
+    
 
 === function ShowTime(t) ===
     ~ temp hour = INT(t/60)
@@ -131,6 +149,7 @@ VAR GoSleep = false
     
 === function EnoughMoney(productPrice, productName)
 {Money >= productPrice:
+    ~Money -= productPrice
     After a moment of hesitation you insert your wrist into the machine and immediately are notified by a robotic voice “Transaction complete, {productPrice} amount of GGTs was taken from your account.”. Now {productName} is legally yours.
     ~return true
 -else:
@@ -138,12 +157,34 @@ VAR GoSleep = false
     ~return false
 }
 
+=== function CheckFloor(floor) ===
+    #image:elevator audio: elevator music
+    {floor}. The doors close and the elevator starts moving up.
+    …
+    #audio: spooky static
+    ……
+    #audio: back to elevator music
+    ………
+    Doors open and you step out of the elevator.
+
+    {floor == WorkFloor:
+        ~return true
+    -else:
+        ~return false
+    }
+
+=== function CheckHallway(hall) ==
+    {hall == WorkHallway:
+        ~return true
+    -else:
+        ~return false
+    }
 ===waking_up===
 ~NoiseComplain = false
 ~Dressed = false
 ~Time = 360.001
 ~Day += 1
-~Money = RANDOM(0,20)
+~Money = RANDOM(0, 20)
 
 ~ExistenceFee = RANDOM(15,30)
 ~SocialScore = 0
@@ -187,9 +228,16 @@ VAR GoSleep = false
 
 ~PermissionDeniedNeighboringDistrict = false
 ~Worked = false
+~LateForWork = false
+~Tresspasser = false
+~TravelStreamUsedTimes = 0
 
 ~ArrestedOutside = false
 ~GoSleep = false
+
+~ExistenceFeePaid = false
+~TravelFeePaid = false
+~FunkConsumed = false
 
 {Day > 1:
     Day {Day}
@@ -332,7 +380,7 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         -> apartment_check_balcony
     + Check inventory
         -> check_inventory(-> apartment_choices)
-    + {Dressed} Leave apartment
+    + {Dressed && WorkMessageChecked} Leave apartment
         {ShowTimeMoney()}
         {
                     -ArrestedOutside:
@@ -341,6 +389,8 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                         ->pre_next_day
                 }
         -> leave_apartment
+    + {Worked} Go to sleep
+        -> pre_next_day
         
     =apartment_pre_use_pct
     # image: PCT audio: HDD sounds
@@ -418,7 +468,7 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 
                 We also remind you that you need to pay a daily fee for your existence of {ExistenceFee} GGT (Great Government’s Token)  units.
                 
-                \*Failing to arrive at the destination will result in unemployment. Income tax is determined by your social score.\*
+                \*Failing to arrive at the destination will result in unemployment. \*
                 —
                 
                 It would be a good idea to not miss this offer.
@@ -654,8 +704,8 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                     -> take_noodles
             }
             {FridgeVoidBiscuits: 
-                Void Biscuits
-                + Take Void Biscuits({FridgeVoidBiscuits})
+                Void Biscuits({FridgeVoidBiscuits})
+                + Take Void Biscuits
                     ~Time += 0.5
                     {ShowTimeMoney()}
                     {
@@ -818,110 +868,74 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     # image:before taking audio: fridge buzzing
     You grab a transparent canister with green-ish goo-tea
     ~ InventoryGooTea += 1
-    {AtHome:
         ~ FridgeGooTea -= 1
         # image:after taking audio: fridge buzzing
         -> fridge_contents
-    -else:
-        -> DONE
-    }
     
 ===take_ice_scream
     # image:before taking audio: fridge buzzing
     You grab a cone of ice-scream with a frozen spiky top
     ~ InventoryIceScream += 1
-    {AtHome:
         ~ FridgeIceScream -= 1
         # image:after taking audio: fridge buzzing
         -> fridge_contents
-    -else:
-        -> DONE
-    }
     
 ===take_noodles
     # image:before taking audio: fridge buzzing
     You grab a can of spiral noodles
     ~ InventoryNoodles += 1
-    {AtHome:
         ~ FridgeNoodles -= 1
         # image:after taking audio: fridge buzzing
         -> fridge_contents
-    -else:
-        -> DONE
-    }
 
 ===take_void_biscuits
     # image:before taking audio: fridge buzzing
     You grab a pack of void-biscuits
     ~ InventoryVoidBiscuits += 1
-    {AtHome:
         ~ FridgeVoidBiscuits -= 1
         # image:after taking audio: fridge buzzing
         -> fridge_contents
-    -else:
-        -> DONE
-    }
 
 ===take_cripple_crackers
     # image:before taking audio: fridge buzzing
     You grab a box of Cripple-Crackers
     ~ InventoryCrippleCrackers += 1
-    {AtHome:
         ~ FridgeCrippleCrackers -= 1
         # image:after taking audio: fridge buzzing
         -> fridge_contents
-    -else:
-        -> DONE
-    }
 
 ===take_water
     # image:before taking audio: fridge buzzing
     You grab a transparent bag of clean water in form of a cube
     ~ InventoryWater += 1
-    {AtHome:
         ~ FridgeWater -= 1
         # image:after taking audio: fridge buzzing
         -> fridge_contents
-    -else:
-        -> DONE
-    }
 
 ===take_infinite_party
     # image:before taking audio: fridge buzzing
     You take hold of a Klein bottle with a bright cyan bubbly liquid. 
     ~ InventoryInfiniteParty += 1
-    {AtHome:
         ~ FridgeInfiniteParty -= 1
         # image:after taking audio: fridge buzzing
         -> fridge_contents
-    -else:
-        -> DONE
-    }
 
 ===take_fuzzy_buz
     # image:before taking audio: fridge buzzing
     You grab a bottle resembling an irregular polygon.
     ~ InventoryFuzzyBuzz += 1
-    {AtHome:
         ~ FridgeFuzzyBuzz -= 1
         # image:after taking audio: fridge buzzing
         -> fridge_contents
-    -else:
-        -> DONE
-    }
 
 ===take_jar
     # image:before taking audio: fridge buzzing
     You take the bottle in a jar
     {HasSpiralFlower: This looks like a good container for that spiral flower.}
     ~ InventoryBottleInAJar += 1
-    {AtHome:
         ~ FridgeBottleInAJar -= 1
         # image:after taking audio: fridge buzzing
         -> fridge_contents
-    -else:
-        -> DONE
-    }
 
 ===put_goo_tea
     # image:before put audio: fridge buzzing
@@ -1125,6 +1139,7 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     You take hold of a Klein bottle with a bright cyan bubbly liquid. Removing a thin cover from the bottle's opening the liquid immediately starts to move out of the bottle. You have no choice but to drink it to avoid spillage. As soon as you finish the drink you feel slightly energized, but your perception of reality starts distorting, the fridge before you starts melting and the walls seem to flow around you in a plethora of unseen colors and patterns. You start feeling lightheaded, even the flow of time seems to be misshaped, the time on the clock jumping and stopping while you stare into the endless bottle in your hand. You come back to your senses in a couple of hours lying on the floor in the middle of your square room, you pick up the funny looking bottle next to you and throw it into the garbage vent of a still open fridge.
     +[Continue]
     
+    ~FunkConsumed = true
     ~InventoryInfiniteParty -= 1
     ~Time += RANDOM(123, 169)
     ->check_inventory(location)
@@ -1133,6 +1148,7 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     Taking a closer look at the bottle resembling an irregular polygon, you can see a dark green smoking liquid inside. Advocating the value of your purchase you remove the plug at the top and despite the strong repulsing smell of the green smoke that comes out you chug down the contents of the bottle and throw it into the garbage vent. Immediately you feel a burning sensation washes through your mouth, your vision gets blurry and your muscles relax. Slothfully, you get to your bed and drop on its surface, embracing the relaxed state you’ve found yourself in . In this state you’d be unable to perform anything productive, so you take a rest for an hour before resuming other activities.
     +[Continue]
     
+    ~FunkConsumed = true
     ~InventoryFuzzyBuzz -= 1
     ~Time += 60
     ->check_inventory(location)
@@ -1321,7 +1337,8 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         + Approach the gate
             # image:guard audio: STOP RIGHT THERE!
             While advancing to the gate you are stopped by a nearby guard and briefly get interrogated, not giving any definitive answer to why you would want to leave the district. The guard, unsatisfied with your answers, takes your hand and scans the barcode on your wrist and tells you to leave if you don’t have any official business in the other district.
-            {~PermissionDeniedNeighboringDistrict = true}
+            ~PermissionDeniedNeighboringDistrict = true
+            ~SocialScore -= 5
             ~Time += 5
             {ShowTimeMoney()}
             {
@@ -1332,6 +1349,9 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
                 }
             -> outside_with_map
         + Wander somewhere else
+            # image: map audio: rain
+            Trying to move to another district without a reason is an easy way to get in trouble, you open your map again and decide to wander somewhere else…
+
             ~Time += 1
             {ShowTimeMoney()}
             {
@@ -1348,6 +1368,13 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     + Look at goods in stock
         ->store_goods
     + Return outside
+        {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
         ->outside_with_map
         
     =store_goods
@@ -1370,44 +1397,322 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
         \- “Liquid funk: Fuzzy buz” Need a break? Then fuzz you take!({FuzzyBuzzPrice} GGT)
         \- “Bottle in a jar” For all your household needs.({BottleInAJarPrice} GGT)
         + Buy Goo-tea
-            {EnoughMoney(GooTeaPrice, "Goo-tea")}
+            {EnoughMoney(GooTeaPrice, "Goo-tea"): 
+                ~InventoryGooTea += 1
+            }
             ++Continue
-                -> store
+                -> store_goods
         + Buy Ice-scream
-            {EnoughMoney(IceScreamPrice, "Ice-scream")}
+            {EnoughMoney(IceScreamPrice, "Ice-scream"):
+                ~InventoryIceScream += 1
+            }
             ++Continue
-                -> store
+                -> store_goods
         + Buy Can of spiral noodles
-            {EnoughMoney(NoodlesPrice, "Can of spiral noodles")}
+            {EnoughMoney(NoodlesPrice, "Can of spiral noodles"):
+                ~InventoryNoodles += 1
+            }
             ++Continue
-                -> store
+                -> store_goods
         + Buy void-biscuits
-            {EnoughMoney(VoidBiscuitsPrice, "void-biscuits")}
+            {EnoughMoney(VoidBiscuitsPrice, "void-biscuits"):
+                ~InventoryVoidBiscuits += 1
+            }
             ++Continue
-                -> store
+                -> store_goods
         + Buy Cripple-crackers
-            {EnoughMoney(CrippleCrackersPrice, "Cripple-crackers")}
+            {EnoughMoney(CrippleCrackersPrice, "Cripple-crackers"):
+                ~InventoryCrippleCrackers += 1
+            }
             ++Continue
-                -> store
+                -> store_goods
         + Buy Water (Moist brand)
-            {EnoughMoney(WaterPrice, "Water (Moist brand)")}
+            {EnoughMoney(WaterPrice, "Water (Moist brand)"):
+                ~InventoryWater += 1
+            }
             ++Continue
-                -> store
+                -> store_goods
         + Buy Liquid funk: Infinite party
-            {EnoughMoney(InfinitePartyPrice, "Liquid funk: Infinite party")}
+            {EnoughMoney(InfinitePartyPrice, "Liquid funk: Infinite party"):
+                ~InventoryInfiniteParty += 1
+            }
             ++Continue
-                -> store
+                -> store_goods
         + Buy Liquid funk: Fuzzy buz
-            {EnoughMoney(GooTeaPrice, "Goo-tea")}
+            {EnoughMoney(FuzzyBuzzPrice, "Buy Liquid funk: Fuzzy buz"):
+                ~InventoryFuzzyBuzz += 1
+            }
             ++Continue
-                -> store
+                -> store_goods
         + Buy Bottle in a jar
-            {EnoughMoney(GooTeaPrice, "Goo-tea")}
+            {EnoughMoney(BottleInAJarPrice, "Bottle in a jar"):
+                ~InventoryBottleInAJar += 1
+            }
             ++Continue
-                -> store
+                -> store_goods
+        + Go outside
+            {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+            ->outside_with_map
     
 ===work
-->outside_with_map
+    # image: black screen audio: rain
+    At last you decide to go to The Factory™, the place of your newly found employment. It is quite far away from your current location, you COULD just walk there though it would take more time or there is always an option to use “Travel stream™” for fast and safe travels throughout the district.
+    + Walk by foot
+        ~WalkedTimes += 1
+        #image: city streets audio: rain + footsteps
+        You study the map of the city for a few moments, then depart towards your destination. Not a lot of people are walking on the streets today and you get a good look at city buildings that look like large concrete pyramid monoliths, you can spot some citizens observing the rainy city from their balcony. Walking further you can see shorter square buildings used for storage and different commercial areas, occasionally you pass by some public areas with benches and info booths, until finally, you arrive at The Factory™.
+        ++[Continue]
+            ~Time += RANDOM(30,60)
+                {ShowTimeMoney()}
+                {
+                        -ArrestedOutside:
+                            ->ENDING_arrested_for_late_outside
+                        -GoSleep:
+                            ->pre_next_day
+                    }
+            ->workplace
+    + Use “Travel stream™”
+        ~Time += 5
+            {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+        ->travel_stream
+               
+    =travel_stream
+        ~TravelStreamUsedTimes+=1
+        #image: dark river + small booth audio: muffled water current
+        Travel stream™ (TS for short) - is a vast interconnected system of streams of unknown liquid, it allows for quick transportation between different points of interest in the city.
+        You approach the nearest TS checkpoint, which consists of a small booth with a trapdoor at the floor and a screen on the wall.
+        ++ [Continue]
+            #image: dark river audio:water current
+            You enter the booth, selecting the desired destination on the screen interface, as soon as you confirm your choice a mechanical arm detaches your head from your body and throws your head into the stream, meanwhile your body falls through the trapdoor of the booth.
+
+            +++[Continue]
+                #image: balck screen audio: drowning
+                Now you are moving through the stream, almost drowning in it actually, you traverse the current of watery mysterious liquid for what seems like an eternity, until suddenly your head is grabbed by a similar mechanical arm and is reattached to a new body of the same model, it is ether a cleaner version of your previous body or a whole new body all together, there is no way to say for sure. After you briefly check the motorics on your reattached body, you leave the checkpoint booth.
+                    ++++[Continue]
+                    A fee of {TravelStreamFee}GGTs will be subtracted from your account at the end of the day for each use of TS, be sure to have enough GGTs by the end of the day.
+                    {
+                        -!Worked: 
+                            ->workplace
+                        -else:
+                            ->outside_with_map
+                    }
+    =workplace
+
+    #image: the factory audio: trucks + muffled factory sounds + rain
+    You’ve finally arrived at the factory - a giant rectangular building with lots of exhaust pipes releasing different colored smoke into the air, there are large trucks arriving at leaving the factory by the minute through one of the gates at the factory’s checkpoint, the muffled sound of heavy machinery can be heard from the inside of this giant building. A guard at the entrance looks at you, then at his notebook and without a word makes a pointing gesture towards the staff entrance.
+    +[Continue]
+        #image: a hall with a building map audio: buzzing lights + quiet wind
+        You pass through the darkened glass automatic doors making it into the main hallway. First thing that you notice is a large detailed map of the factory.
+            ++[Continue]
+            ~Time += 2
+                {ShowTimeMoney()}
+                {
+                        -ArrestedOutside:
+                            ->ENDING_arrested_for_late_outside
+                        -GoSleep:
+                            ->pre_next_day
+                    }
+            {
+                - Time < WorkTime:
+                    -> arrived_in_time
+                -else:
+                    -> late_for_work
+            }
+            
+    =arrived_in_time
+        #image: HR manager audio: very distorted “hey”
+        “Hey, you must be our new employee, right?” you hear a voice resonating from the hallway. A slim person makes its way towards you: “My name is �̴̥̺͍̝̈́͐̚ͅ�̧̤̭̫͍̥̲͓̘͂̓̇ͭ�̷͉͎̠ͩ̐�͈̜̐̌̽̏͟�̛̥̠̜̜̭̤̊̓ͦ, i am in the charge of new employees, i’ll show you the way to your workplace.”” you didn’t quite catch his name…
+        {
+            - Accessory != "Nothing":
+                “Really like your {Accessory}, by the way.” You knew wearing it was not a mistake.
+        }
+        +[Continue]
+           #image: factory door audio: muffled machinery
+            As you move through never ending hallways and use the elevator, your mentor explains to you the basics of your job and of the machinery you’ll be operating, now you have an understanding of your job responsibilities here. “This is your designated room, if you need more details you can always check the manual on your desk!” he says as he proceeds moving through the hallway, leaving you alone at the doorstep of your workplace, the door already has your name on it, it would seem your name is written over a scratched name of the previous employee.
+            ~KnowsHowToWork = true
+            ++ Open the door
+                <hr>
+                ->start_work
+        
+    =late_for_work
+        ~LateForWork = true
+        # image: map closeup audio: silence>
+        You are late for work and need to figure out the way to your workplace as soon as possible if you want it to still be your workplace. You take a moment to look at the map to take a few mental notes about the means of traversing floors like elevators and stairs, and the general layout of the hallways inside this huge building.
+        +Go to elevator
+            # image: elevator audio: silence
+            You make your way towards the nearest elevator, concentrating and remembering the floor from the PCT letter you press the button…
+            ++ 1
+                {CheckFloor(1): 
+                    ->floor_check
+                -else:
+                    ->floor_guard_check
+                }
+            ++ 2
+                {CheckFloor(2): 
+                    ->floor_check
+                -else:
+                    ->floor_guard_check
+                }
+            ++ 3
+                {CheckFloor(3): 
+                    ->floor_check
+                -else:
+                    ->floor_guard_check
+                }
+            ++ 4
+                {CheckFloor(4): 
+                    ->floor_check
+                -else:
+                    ->floor_guard_check
+                }
+            ++ 5
+                {CheckFloor(5): 
+                    ->floor_check
+                -else:
+                    ->floor_guard_check
+                }
+    =floor_guard_check
+        #image: guard audio: STOP RIGHT THERE!
+        Suddenly you are stopped and questioned by a guard. You explain that you just got lost in the factory trying to find your workplace. Guard checks his notebook for a moment, gives you an approving nod and orders you to hurry to your workplace.
+        ~Tresspasser = true
+        +Continue to your floor {WorkFloor}
+            ->floor_check
+
+    =floor_check
+        #image: elevator room audio:silence
+        From this round elevator room you can access different hallways of the factory. Taking a moment to think you decide to go through the hallway…
+            + A
+                {CheckHallway("A"): 
+                    ->floor_check
+                -else:
+                    ->hall_guard_check
+                }
+            + B
+                {CheckHallway("B"):  
+                    ->floor_check
+                -else:
+                    ->hall_guard_check
+                }
+            + C
+                {CheckHallway("C"):  
+                    ->floor_check
+                -else:
+                    ->hall_guard_check
+                }
+            + D
+                {CheckHallway("D"): 
+                    ->floor_check
+                -else:
+                    ->hall_guard_check
+                }
+            + E
+                {CheckHallway("E"): 
+                    ->floor_check
+                -else:
+                    ->hall_guard_check
+                }
+    =hall_guard_check
+        #image: guard audio: STOP RIGHT THERE!
+        Suddenly you are stopped and questioned by a guard. You explain that you just got lost in the factory trying to find your workplace. Guard checks his notebook for a moment, gives you an approving nod and orders you to hurry to your workplace.
+        ~Tresspasser = true
+        +Continue to your hallway {WorkHallway}
+            ->hall_check
+    =hall_check
+        #image: shady hallway udio: muffled industry
+        As you advance through the hallway you notice a door with your name on it.
+        + Open door
+            ->start_work
+    =start_work
+        #image: your office audio: packaging industry sounds
+        Inside your “office” the first thing you notice is a wide glass panel that allows you to see the workings of the packaging machine of the factory. Before the glass there is a desc with a work manual, and on the sides there is an array of levers, buttons and switches. It would seem that this operating desk is the only object in the room, there is not even a chair to sit on, you’d think such a big factory at least would be able to afford some furniture.
+        + Read work manual
+            #image: manual audio: packaging industry sounds
+            You open the manual lying on your desk. Browsing through the pages you get an understanding of your job responsibilities and how to actually operate the machine behind your glass through the buttons and levers on your desk.
+                {
+                    -!LateForWork: 
+                        But you already knew most of it from the guy that met you at the entrance of the factory.
+                }
+                ~KnowsHowToWork = true
+                ++ Work
+                -> progress_work
+                ++Leave work
+                ->leave_work
+        + Work
+        -> progress_work
+        
+        +Leave work
+        ->leave_work
+        
+    =progress_work
+        {KnowsHowToWork:
+            #image: the machine audio: ritmic factory sounds
+            Having assimilated the information you need to operate this piece of machinery you start working, pressing the right buttons, switches and levers to package, label, control and dismiss the goods fabricated by The Factory™. After some time you get the hang of it and start performing actions almost automatically, the industrial noise almost seems to form a ritmic melody of moving mechanical arms, printed labels and follen boxes.
+            +Work until the end of the shift
+            #image: the machine audio: BZZTS sound
+            ~temp workedHours = INT((1080-Time)/60)
+            ~temp pay = workedHours * HourlyPay
+            You hear a loud buzzy sound and the machine stops “Day shift over.” is pronounced through the hallway on the speakers. You’ve worked {workedHours} hours that constitutes an income of {pay} GGTs. It is time to return home. 
+            ~Worked = true
+            ~Money += pay
+            ->leave_work
+        -else:
+            You don’t know what exactly you have to do here at The Factory™ as a new employee, but you bet that it has something to do with those buttons and levers at your desk. You start pressing them one by one to see how it affects the machine behind the glass.
+            You press a button - nothing happens.
+            You switch a switch - nothing happens.
+            You pull a lever - nothing…
+            +Boom
+                #image:fire audio: explosion
+                …in a flash, the machine explodes, catching fire and shattering the glass in your direction.
+                -> ENDING_died_at_workplace
+        }
+    =leave_work
+    {
+        -!Worked:
+            #image: door audio: door won’t open
+            You try to open the door and exit the room, but the door is blocked. It seems you won’t be leaving work until the shift is over.
+            +Work
+                ->progress_work
+        -else:
+            ~Time = 1080
+            ~Fired = LateForWork && Tresspasser
+            #image: a hall with a building map audio: worker’s steps
+            You leave the machinery room and so do other factory workers, you proceed towards the elevator and make it back to the ground floor at the map room, now it is time to decide how you are gonna return back home.
+            +Walk by foot
+                ~WalkedTimes += 1
+                ~Time += RANDOM(30,60)
+            {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+                #image: distant city audio: rain+ wind + footsteps 
+                You study the map of the city for a few moments, then depart towards your destination. The sky turns even darker in the evening and you get a good look at city buildings shining in the distance, you can spot dense, different colored clouds moving from the factory towards the middle of the city. After a while you arrive at a more familiar area next to your apartment block.
+                ->outside_with_map
+            +Use “Travel stream™”
+                ~Time+=5
+                {ShowTimeMoney()}
+            {
+                    -ArrestedOutside:
+                        ->ENDING_arrested_for_late_outside
+                    -GoSleep:
+                        ->pre_next_day
+                }
+                ->travel_stream
+    }
 
 ===outside_without_map
     # image: black screen audio: rain
@@ -1457,7 +1762,7 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
             {
                 -x <= 2:
                     -> info_banner
-                -x >= 8:
+                -x >= 7:
                     -> aimless_wander
                 -else:
                     -> shady_alley
@@ -1555,10 +1860,129 @@ Concentrating all of your willpower you get out of bed and turn off the alarm. D
     2 surveillance robots caught you for being outside after {ShowTime(CloseOutsideTime)}, you will be relocated to the re-education camp until we decide that you are fit to return into society.
     ->next_day
 
+===ENDING_died_at_workplace
+    +...
+        #image: you pierced with glass, bleeding, and on fire audio: fire + sirens
+        You slam against the wall from the blast of the explosion, 4 shards of sharp class pierce your face and body, a burst of fire scorches and sets on fire your right side. Pierced with glass, bleeding out and on fire, you meet your end.
+
+        <b>GAME OVER</b>
+        Not the best first day on the job, perhaps next time you should read the manual.
+        ->next_day
+        
+===ENDING_did_not_pay_fees
+    Unfortunately you were not able to pay for your fees, we will send our agent to evict you from your apartment so it may find a new, more prosperous owner. Meanwhile you will be relocated to the social worker camp until you’ll be able to pay what you owe.
+    ->next_day
+    
+===ENDING_negative_social_score
+    Unfortunately, due to your negative actions towards our community we will send our agent to evict you from your apartment so it may find a new, more law-abiding owner. Meanwhile you will be relocated to the re-education camp until we decide that you are fit to return into society.
+    ->next_day
+
+===ENDING_fired_not_botanist
+    Unfortunately, you were fired today from The Factory™ due to being late for work and trespassing on the factory’s premises/not showing up for work, thus lowering your employment grade. We will send our agent to relocate you into a less prosperous district, so you may find another job there. 
+    ->next_day
+
+===ENDING_botanist
+    You’ve proven to be able to tend plants and preserve their harvest in your free time, we will send our agent to relocate you to the more prosperous botanist district so you may use your hobby for greater good.
+    ->next_day
+    
+===ENDING_good
+    You’ve proven to be a functioning member of society, we will send our agent to relocate you to a different apartment block with lower surveillance score. We hope you won’t betray our trust, and will continue to bring prosperity to our city.
+    ->next_day
+    
 ===pre_next_day
     + (...yawn)
     It's getting too late and you decide to go to sleep
-    ->next_day
+    ->deduce_ending
+    
+===deduce_ending
+    {
+        -Money > ExistenceFee:
+            ~Money -= ExistenceFee
+            ~ExistenceFeePaid = true
+    }
+    {
+        -Money > (TravelStreamFee * TravelStreamUsedTimes):
+            ~Money -= (TravelStreamFee * TravelStreamUsedTimes)
+            ~TravelFeePaid = true
+    }
+    #audio: dial up sound image: PCT
+    After a few seconds of staring at the loading screen you are informed that you have one new message from “Great Government”...
+    —
+    “Dear citizen, we at GG surveillance team have watched you closely and want to inform you that:
+    {
+        -ExistenceFeePaid:
+            You have been able to pay off your Existence Fee of {ExistenceFee}GGT;
+        -else:
+            You have not been able to pay off your Existence Fee of {ExistenceFee}GGT;
+    }
+    {
+        -TravelFeePaid && TravelStreamUsedTimes:
+            You have been able to pay off your Travel Fee of {TravelStreamFee * TravelStreamUsedTimes}GGT for using Travel Stream™ {TravelStreamUsedTimes} times;
+        -TravelStreamUsedTimes:
+            You have not been able to pay off your Travel Fee of {TravelStreamFee * TravelStreamUsedTimes}GGT for using Travel Stream™ {TravelStreamUsedTimes} times;
+    }
+    {
+        -WalkedTimes == 2:
+            You have walked a considerable amount of time on foot today, we are glad you are keeping a healthy life-style
+    }
+    {
+        -ConsumedNutrients>=3:
+             You have consumed an acceptable amount of nutrients today. We are glad you are eating well.
+        -else:
+            You didn’t consume an acceptable amount of nutrients today. We will send you a package of spiral noodles from the factory. The amount {NoodlesPrice}GGT will be withdrawn from your account.
+            ~FridgeNoodles +=1
+    }
+    {
+        -InvestedInLGCDP:
+            You successfully contributed to society by investing in LGCDP. (+5 social score)
+    }
+    {
+        -Fired:
+            You got fired from The Factory™.
+        -else:
+            You have proven to be a great employee at The Factory™
+    }
+    {
+        -NoiseComplain:
+            You have been accused of disturbing the peace of your neighbors this morning. (-5 social score)
+    }
+    {
+        -(PlantStateNextDay > 0 && PlantStateNextDay <3) || HasSpiralFlower || FridgeJarFlower:
+            You successfully tended the plant at your apartment.
+        -else:
+            You unsuccessfully tended the plant at your apartment.
+    }
+    {
+        -HasSpiralFlower:
+            Even managed to harvest its flower.
+    }
+    {
+        -FridgeJarFlower:
+            Even managed to harvest its flower and preserve it in a jar.
+    }
+    {
+        -PermissionDeniedNeighboringDistrict:
+            You have attempted to trespass into another district. (-5 social credit)
+    }
+    {
+        -FunkConsumed:
+            You have indulged yourself in the consumption of liquid funk. Remember to consume it in moderation.
+    }
+    —
+    +[Continue]
+        {
+            -!ExistenceFeePaid || !TravelFeePaid:
+                -> ENDING_did_not_pay_fees
+            -SocialScore < 0:
+                -> ENDING_negative_social_score
+            -Fired && !FridgeJarFlower:
+                -> ENDING_fired_not_botanist
+            -FridgeJarFlower:
+                -> ENDING_botanist
+            -else:
+                ->ENDING_good
+        }
+->next_day
     
 ===next_day
     ~PlantState = PlantStateNextDay
