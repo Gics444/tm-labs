@@ -1,0 +1,339 @@
+[gd_scene load_steps=18 format=2]
+
+[ext_resource path="res://tiles/basicEnv.png" type="Texture" id=1]
+[ext_resource path="res://TileMap.gd" type="Script" id=2]
+[ext_resource path="res://tiles/basicCell.png" type="Texture" id=3]
+[ext_resource path="res://fonts/ARIAL.TTF" type="DynamicFontData" id=4]
+[ext_resource path="res://sprites/stop.png" type="Texture" id=5]
+[ext_resource path="res://WindowDialog.tscn" type="PackedScene" id=6]
+[ext_resource path="res://CellSelect.gd" type="Script" id=7]
+[ext_resource path="res://tiles/hardenedCell.png" type="Texture" id=8]
+[ext_resource path="res://tiles/killerCell.png" type="Texture" id=9]
+[ext_resource path="res://tiles/deadlyEnv.png" type="Texture" id=10]
+[ext_resource path="res://tiles/criminalEnv.png" type="Texture" id=11]
+[ext_resource path="res://tiles/fertileEnv.png" type="Texture" id=12]
+
+[sub_resource type="TileSet" id=1]
+0/name = "basicCell.png 1"
+0/texture = ExtResource( 3 )
+0/tex_offset = Vector2( 0, 0 )
+0/modulate = Color( 1, 1, 1, 1 )
+0/region = Rect2( 0, 0, 64, 64 )
+0/tile_mode = 0
+0/occluder_offset = Vector2( 0, 0 )
+0/navigation_offset = Vector2( 0, 0 )
+0/shape_offset = Vector2( 0, 0 )
+0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+0/shape_one_way = false
+0/shape_one_way_margin = 0.0
+0/shapes = [  ]
+0/z_index = 0
+1/name = "hardenedCell.png 1"
+1/texture = ExtResource( 8 )
+1/tex_offset = Vector2( 0, 0 )
+1/modulate = Color( 1, 1, 1, 1 )
+1/region = Rect2( 0, 0, 64, 64 )
+1/tile_mode = 0
+1/occluder_offset = Vector2( 0, 0 )
+1/navigation_offset = Vector2( 0, 0 )
+1/shape_offset = Vector2( 0, 0 )
+1/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+1/shape_one_way = false
+1/shape_one_way_margin = 0.0
+1/shapes = [  ]
+1/z_index = 0
+2/name = "killerCell.png 2"
+2/texture = ExtResource( 9 )
+2/tex_offset = Vector2( 0, 0 )
+2/modulate = Color( 1, 1, 1, 1 )
+2/region = Rect2( 0, 0, 64, 64 )
+2/tile_mode = 0
+2/occluder_offset = Vector2( 0, 0 )
+2/navigation_offset = Vector2( 0, 0 )
+2/shape_offset = Vector2( 0, 0 )
+2/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+2/shape_one_way = false
+2/shape_one_way_margin = 0.0
+2/shapes = [  ]
+2/z_index = 0
+3/name = "basicEnv.png 3"
+3/texture = ExtResource( 1 )
+3/tex_offset = Vector2( 0, 0 )
+3/modulate = Color( 1, 1, 1, 1 )
+3/region = Rect2( 0, 0, 64, 64 )
+3/tile_mode = 0
+3/occluder_offset = Vector2( 0, 0 )
+3/navigation_offset = Vector2( 0, 0 )
+3/shape_offset = Vector2( 0, 0 )
+3/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+3/shape_one_way = false
+3/shape_one_way_margin = 0.0
+3/shapes = [  ]
+3/z_index = 0
+4/name = "fertileEnv.png 4"
+4/texture = ExtResource( 12 )
+4/tex_offset = Vector2( 0, 0 )
+4/modulate = Color( 1, 1, 1, 1 )
+4/region = Rect2( 0, 0, 64, 64 )
+4/tile_mode = 0
+4/occluder_offset = Vector2( 0, 0 )
+4/navigation_offset = Vector2( 0, 0 )
+4/shape_offset = Vector2( 0, 0 )
+4/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+4/shape_one_way = false
+4/shape_one_way_margin = 0.0
+4/shapes = [  ]
+4/z_index = 0
+5/name = "deadlyEnv.png 5"
+5/texture = ExtResource( 10 )
+5/tex_offset = Vector2( 0, 0 )
+5/modulate = Color( 1, 1, 1, 1 )
+5/region = Rect2( 0, 0, 64, 64 )
+5/tile_mode = 0
+5/occluder_offset = Vector2( 0, 0 )
+5/navigation_offset = Vector2( 0, 0 )
+5/shape_offset = Vector2( 0, 0 )
+5/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+5/shape_one_way = false
+5/shape_one_way_margin = 0.0
+5/shapes = [  ]
+5/z_index = 0
+6/name = "criminalEnv.png 6"
+6/texture = ExtResource( 11 )
+6/tex_offset = Vector2( 0, 0 )
+6/modulate = Color( 1, 1, 1, 1 )
+6/region = Rect2( 0, 0, 64, 64 )
+6/tile_mode = 0
+6/occluder_offset = Vector2( 0, 0 )
+6/navigation_offset = Vector2( 0, 0 )
+6/shape_offset = Vector2( 0, 0 )
+6/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+6/shape_one_way = false
+6/shape_one_way_margin = 0.0
+6/shapes = [  ]
+6/z_index = 0
+
+[sub_resource type="DynamicFont" id=4]
+size = 128
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 128
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 128
+font_data = ExtResource( 4 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color( 1, 0, 0, 1 )
+
+[node name="TileMap" type="TileMap"]
+tile_set = SubResource( 1 )
+format = 1
+script = ExtResource( 2 )
+width = 96
+height = 54
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.1
+autostart = true
+
+[node name="GenerateLabel" type="Label" parent="."]
+margin_right = 441.0
+margin_bottom = 144.0
+custom_fonts/font = SubResource( 4 )
+text = "Generate:"
+
+[node name="RandomButton" type="Button" parent="."]
+margin_left = 6.0
+margin_top = -174.0
+margin_right = 616.0
+margin_bottom = -4.0
+focus_mode = 0
+custom_fonts/font = SubResource( 2 )
+text = "Classic"
+
+[node name="ExpandedRandomButton" type="Button" parent="."]
+margin_left = 6.0
+margin_top = -174.0
+margin_right = 616.0
+margin_bottom = -4.0
+focus_mode = 0
+custom_fonts/font = SubResource( 2 )
+text = "Expanded"
+
+[node name="ClearButton" type="Button" parent="."]
+margin_left = 6.0
+margin_top = -174.0
+margin_right = 616.0
+margin_bottom = -4.0
+focus_mode = 0
+custom_fonts/font = SubResource( 2 )
+text = "Clear"
+
+[node name="HelpButton" type="Button" parent="."]
+margin_left = 6.0
+margin_top = -174.0
+margin_right = 616.0
+margin_bottom = -4.0
+focus_mode = 0
+custom_fonts/font = SubResource( 2 )
+text = "?"
+
+[node name="PausePlayButton" type="Button" parent="."]
+margin_right = 12.0
+margin_bottom = 20.0
+focus_mode = 0
+icon = ExtResource( 5 )
+
+[node name="SpeedButtons" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="1" type="Button" parent="SpeedButtons"]
+margin_right = 12.0
+margin_bottom = 20.0
+focus_mode = 0
+custom_fonts/font = SubResource( 3 )
+toggle_mode = true
+text = "1"
+
+[node name="2" type="Button" parent="SpeedButtons"]
+margin_right = 12.0
+margin_bottom = 20.0
+focus_mode = 0
+custom_fonts/font = SubResource( 3 )
+toggle_mode = true
+text = "2"
+
+[node name="3" type="Button" parent="SpeedButtons"]
+margin_right = 12.0
+margin_bottom = 20.0
+focus_mode = 0
+custom_fonts/font = SubResource( 3 )
+toggle_mode = true
+text = "3"
+
+[node name="4" type="Button" parent="SpeedButtons"]
+margin_right = 12.0
+margin_bottom = 20.0
+focus_mode = 0
+custom_fonts/font = SubResource( 3 )
+toggle_mode = true
+text = "4"
+
+[node name="SpeedLabel" type="Label" parent="."]
+margin_right = 40.0
+margin_bottom = 14.0
+custom_fonts/font = SubResource( 4 )
+text = "Speed: "
+
+[node name="CellsLabel" type="Label" parent="."]
+margin_right = 40.0
+margin_bottom = 14.0
+custom_fonts/font = SubResource( 4 )
+text = "Set cell: "
+
+[node name="Roles" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Basic" type="Button" parent="Roles"]
+margin_right = 170.0
+margin_bottom = 170.0
+custom_styles/pressed = SubResource( 5 )
+toggle_mode = true
+icon = ExtResource( 3 )
+expand_icon = true
+script = ExtResource( 7 )
+
+[node name="Hardened" type="Button" parent="Roles"]
+margin_right = 170.0
+margin_bottom = 170.0
+custom_styles/pressed = SubResource( 5 )
+toggle_mode = true
+icon = ExtResource( 8 )
+expand_icon = true
+script = ExtResource( 7 )
+
+[node name="Killer" type="Button" parent="Roles"]
+margin_right = 170.0
+margin_bottom = 170.0
+custom_styles/pressed = SubResource( 5 )
+toggle_mode = true
+icon = ExtResource( 9 )
+expand_icon = true
+script = ExtResource( 7 )
+
+[node name="Environments" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Basic" type="Button" parent="Environments"]
+margin_right = 170.0
+margin_bottom = 170.0
+custom_styles/pressed = SubResource( 5 )
+toggle_mode = true
+icon = ExtResource( 1 )
+expand_icon = true
+script = ExtResource( 7 )
+id = 1
+
+[node name="Fertile" type="Button" parent="Environments"]
+margin_right = 170.0
+margin_bottom = 170.0
+custom_styles/pressed = SubResource( 5 )
+toggle_mode = true
+icon = ExtResource( 12 )
+expand_icon = true
+script = ExtResource( 7 )
+id = 1
+
+[node name="Deadly" type="Button" parent="Environments"]
+margin_right = 170.0
+margin_bottom = 170.0
+custom_styles/pressed = SubResource( 5 )
+toggle_mode = true
+icon = ExtResource( 10 )
+expand_icon = true
+script = ExtResource( 7 )
+id = 1
+
+[node name="Criminal" type="Button" parent="Environments"]
+margin_right = 170.0
+margin_bottom = 170.0
+custom_styles/pressed = SubResource( 5 )
+toggle_mode = true
+icon = ExtResource( 11 )
+expand_icon = true
+script = ExtResource( 7 )
+id = 1
+
+[node name="WindowDialog" parent="." instance=ExtResource( 6 )]
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="pressed" from="RandomButton" to="." method="_on_RandomButton_pressed"]
+[connection signal="pressed" from="ExpandedRandomButton" to="." method="_on_ExpandedRandomButton_pressed"]
+[connection signal="pressed" from="ClearButton" to="." method="_on_ClearButton_pressed"]
+[connection signal="pressed" from="HelpButton" to="." method="_on_HelpButton_pressed"]
+[connection signal="pressed" from="PausePlayButton" to="." method="_on_PausePlayButton_pressed"]
+[connection signal="pressed" from="SpeedButtons/1" to="." method="_on_1_pressed"]
+[connection signal="pressed" from="SpeedButtons/2" to="." method="_on_2_pressed"]
+[connection signal="pressed" from="SpeedButtons/3" to="." method="_on_3_pressed"]
+[connection signal="pressed" from="SpeedButtons/4" to="." method="_on_4_pressed"]
+[connection signal="pressed" from="Roles/Basic" to="." method="_on_BasicRole_pressed"]
+[connection signal="pressed" from="Roles/Hardened" to="." method="_on_HardenedRole_pressed"]
+[connection signal="pressed" from="Roles/Killer" to="." method="_on_KillerRole_pressed"]
+[connection signal="pressed" from="Environments/Basic" to="." method="_on_BasicEnv_pressed"]
+[connection signal="pressed" from="Environments/Fertile" to="." method="_on_FertileEnv_pressed"]
+[connection signal="pressed" from="Environments/Deadly" to="." method="_on_DeadlyEnv_pressed"]
+[connection signal="pressed" from="Environments/Criminal" to="." method="_on_CriminalEnv_pressed"]

@@ -1,0 +1,151 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://fonts/ARIAL.TTF" type="DynamicFontData" id=1]
+[ext_resource path="res://tiles/hardenedCell.png" type="Texture" id=2]
+[ext_resource path="res://tiles/basicEnv.png" type="Texture" id=3]
+[ext_resource path="res://tiles/basicCell.png" type="Texture" id=4]
+[ext_resource path="res://tiles/killerCell.png" type="Texture" id=5]
+[ext_resource path="res://tiles/deadlyEnv.png" type="Texture" id=6]
+[ext_resource path="res://tiles/criminalEnv.png" type="Texture" id=7]
+[ext_resource path="res://tiles/fertileEnv.png" type="Texture" id=8]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 1 )
+
+[node name="WindowDialog" type="WindowDialog"]
+visible = true
+margin_right = 510.0
+margin_bottom = 340.0
+rect_scale = Vector2( 10, 10 )
+mouse_filter = 2
+custom_fonts/title_font = SubResource( 1 )
+window_title = "Help"
+
+[node name="Label" type="Label" parent="."]
+margin_right = 63.0
+margin_bottom = 31.0
+text = "Controls:
+- Space: Pause/Play
+- 1 2 3 4: Change speed"
+
+[node name="Roles" type="Control" parent="."]
+margin_top = 48.0
+margin_right = 112.0
+margin_bottom = 143.0
+
+[node name="Label" type="Label" parent="Roles"]
+margin_left = 3.4
+margin_top = 3.0
+margin_right = 46.4
+margin_bottom = 17.0
+text = "Roles: "
+
+[node name="Basic" type="Sprite" parent="Roles"]
+position = Vector2( 16.15, 29.65 )
+scale = Vector2( 0.404688, 0.404688 )
+texture = ExtResource( 4 )
+
+[node name="BasicLabel" type="Label" parent="Roles"]
+margin_left = 33.0
+margin_top = 22.0
+margin_right = 105.0
+margin_bottom = 36.0
+text = "- Basic cell, lives if 2-3 neighbours are alive."
+
+[node name="Hardened" type="Sprite" parent="Roles"]
+position = Vector2( 16.15, 65.35 )
+scale = Vector2( 0.404688, 0.404688 )
+texture = ExtResource( 2 )
+
+[node name="HardenedLabel" type="Label" parent="Roles"]
+margin_left = 32.8
+margin_top = 48.1
+margin_right = 459.8
+margin_bottom = 79.1
+text = "- Hardened cell, lives if 1-4 neighbours are alive, chance to kill a killer
+  (80%)."
+
+[node name="Killer" type="Sprite" parent="Roles"]
+position = Vector2( 16.15, 97.25 )
+scale = Vector2( 0.404688, 0.404688 )
+texture = ExtResource( 5 )
+
+[node name="KillerLabel" type="Label" parent="Roles"]
+margin_left = 32.8
+margin_top = 84.3
+margin_right = 462.8
+margin_bottom = 115.3
+text = "- Killer cell, lives if 2-3 neighbours are alive, chance to kill a basic 
+  cell(50%), to recruit basic cell (30%), to kill hardened cell(10%)."
+
+[node name="Environments" type="Control" parent="."]
+margin_left = 3.4
+margin_top = 166.8
+margin_right = 126.4
+margin_bottom = 286.8
+
+[node name="Label" type="Label" parent="Environments"]
+margin_right = 40.0
+margin_bottom = 14.0
+text = "Environments:
+"
+
+[node name="Basic" type="Sprite" parent="Environments"]
+position = Vector2( 13.375, 30.175 )
+scale = Vector2( 0.397656, 0.397656 )
+texture = ExtResource( 3 )
+
+[node name="BasicLabel" type="Label" parent="Environments"]
+margin_left = 28.8
+margin_top = 17.4
+margin_right = 443.8
+margin_bottom = 48.4
+text = "- Basic environment, spawns basic cell(100%) if 3 neighbours are alive"
+
+[node name="Fertile" type="Sprite" parent="Environments"]
+position = Vector2( 13.425, 65.775 )
+scale = Vector2( 0.397656, 0.397656 )
+texture = ExtResource( 8 )
+
+[node name="FertileLabel" type="Label" parent="Environments"]
+margin_left = 28.85
+margin_top = 53.0
+margin_right = 443.85
+margin_bottom = 84.0
+text = "- Fertile environment, spawns basic cell(98%), hardened cell(1%), 
+  killer cell(1%) if 2 neighbours are alive"
+
+[node name="Deadly" type="Sprite" parent="Environments"]
+position = Vector2( 13.425, 102.675 )
+scale = Vector2( 0.397656, 0.397656 )
+texture = ExtResource( 6 )
+
+[node name="DeadlyLabel" type="Label" parent="Environments"]
+margin_left = 28.85
+margin_top = 89.9
+margin_right = 450.85
+margin_bottom = 120.9
+text = "- Deadly environment, spawns basic cell(50%), hardened cell(49%), 
+  killer cell(1%) if 4 neighbours are alive"
+
+[node name="Criminal" type="Sprite" parent="Environments"]
+position = Vector2( 13.425, 138.775 )
+scale = Vector2( 0.397656, 0.397656 )
+texture = ExtResource( 7 )
+
+[node name="CriminalLabel" type="Label" parent="Environments"]
+margin_left = 28.85
+margin_top = 126.0
+margin_right = 461.85
+margin_bottom = 157.0
+text = "- Criminal environment, spawns basic cell(60%), hardened cell(5%), 
+  killer cell(35%) if 3 neighbours are alive"
+
+[node name="RandomLabel" type="Label" parent="."]
+margin_left = 156.8
+margin_top = -0.4
+margin_right = 428.8
+margin_bottom = 47.6
+text = "Random generation:
+- Classic: will generate only basic cells
+- Expanded: will generate all available cells"
