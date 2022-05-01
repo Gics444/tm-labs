@@ -10,8 +10,9 @@
 [node name="Sprite" type="Sprite" parent="."]
 
 [node name="TextureProgress" type="TextureProgress" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-value = 100.0
+margin_right = 32.0
+margin_bottom = 6.0
+max_value = 10000.0
+value = 10000.0
 texture_under = ExtResource( 2 )
 texture_progress = ExtResource( 1 )
