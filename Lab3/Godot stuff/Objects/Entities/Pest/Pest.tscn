@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Objects/Base_Object/Healthbar_full.png" type="Texture" id=1]
+[ext_resource path="res://Objects/Base_Object/Healthbar_full_enemy.png" type="Texture" id=1]
 [ext_resource path="res://Objects/Base_Object/Healthbar_empty.png" type="Texture" id=2]
 [ext_resource path="res://Objects/Entities/Pest/Pest.png" type="Texture" id=3]
 [ext_resource path="res://Objects/Entities/Pest/Pest.gd" type="Script" id=4]

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Circle_(Player).png-94423d79b7fa98b796cff1f98e26ccfa.stex"
+path="res://.import/ExpandingBack.png-287ab3496c300eee3c7fe5ef9bc2cd8b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Objects/Entities/Circle_(Player)/Circle_(Player).png"
-dest_files=[ "res://.import/Circle_(Player).png-94423d79b7fa98b796cff1f98e26ccfa.stex" ]
+source_file="res://Main_Scene_(World)/ExpandingBack.png"
+dest_files=[ "res://.import/ExpandingBack.png-287ab3496c300eee3c7fe5ef9bc2cd8b.stex" ]
 
 [params]
 

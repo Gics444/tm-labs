@@ -14,6 +14,7 @@ position = Vector2( 512, 300 )
 current = true
 
 [node name="Sprite" type="Sprite" parent="."]
+visible = false
 position = Vector2( 82, 1027 )
 texture = ExtResource( 3 )
 
@@ -26,7 +27,7 @@ scale = Vector2( 5, 5 )
 [node name="The_Core" parent="." instance=ExtResource( 2 )]
 
 [node name="SpawnTimer" type="Timer" parent="."]
-wait_time = 10.0
+wait_time = 20.0
 autostart = true
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_SpawnTimer_timeout"]
