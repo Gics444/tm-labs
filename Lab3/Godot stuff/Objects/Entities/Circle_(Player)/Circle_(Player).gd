@@ -21,16 +21,18 @@ func _physics_process(delta):
 	motion = move_and_slide(motion * movespeed)
 	
 func _input(event):
+	#print(no_build_areas_entered)
 	if event.is_action_pressed("ui_select") && no_build_areas_entered == 0:
 		if structure_number_selected == "1":
-			var structure = load("res://Objects/Structures/Worker_nest/Worker_nest.tscn").instance()
+			var structure = load("res://Objects/Entities/Pest/Pest.tscn").instance()
 			$"..".add_child(structure)
 			structure.position = position
 		elif structure_number_selected == "2":
-			var structure = load("res://Objects/Entities/Pest/Pest.tscn").instance()
+			var structure = load("res://Objects/Structures/The_Core/The_Core.tscn").instance()
 			$"..".add_child(structure)
 			structure.position = position
 			
 
 func _on_selected_structure(structure_number):
+	#print(structure_number)
 	structure_number_selected = structure_number

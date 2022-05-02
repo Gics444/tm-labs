@@ -3,15 +3,9 @@ var spawn_count = 1
 var essence_count = 0
 var essence_limit = 10
 
-
-
-var current_essence = 0
-var current_segments = 0
-
 func _ready():
 	randomize()
 	$Camera2D/CanvasLayer/UI/ButtonGroup.connect("structure_selected", $"Circle_(Player)", "_on_selected_structure")
-	
 
 var pest_nest = preload("res://Objects/Structures/Pest_Deepnest/Pest_Deepnest.tscn")
 var essence = preload("res://Objects/Structures/Shape_essence/Shape_essence.tscn")
@@ -37,6 +31,3 @@ func _on_EssenceSpawnTimer_timeout():
 		spawn_loc.offset = randi()
 		
 		essence_obj.position = spawn_loc.global_position
-
-func on_essence_changed(num):
-	$Camera2D/CanvasLayer/UI/Essence/Label.text = str(num)
