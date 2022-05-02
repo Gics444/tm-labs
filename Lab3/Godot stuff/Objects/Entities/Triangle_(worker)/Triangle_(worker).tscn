@@ -1,24 +1,30 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Objects/Base_Object/Healthbar_full.png" type="Texture" id=1]
 [ext_resource path="res://Objects/Base_Object/Healthbar_empty.png" type="Texture" id=2]
 [ext_resource path="res://Objects/Entities/Triangle_(worker)/Triangle_(worker).png" type="Texture" id=3]
+[ext_resource path="res://Objects/Entities/Triangle_(worker)/Triangle_(worker).gd" type="Script" id=4]
 
-[node name="KinematicBody2D" type="KinematicBody2D" groups=["Ally"]]
+[node name="Triange_(worker)" type="KinematicBody2D" groups=["Ally", "Worker"]]
+z_index = 1
+script = ExtResource( 4 )
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+rotation = 1.5708
 polygon = PoolVector2Array( -17, 16, 0, -17, 17, 16 )
 
 [node name="Sprite" type="Sprite" parent="."]
+rotation = 1.5708
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 3 )
 
 [node name="TextureProgress" type="TextureProgress" parent="."]
-margin_left = -14.0
-margin_top = 11.0
-margin_right = 18.0
-margin_bottom = 17.0
-rect_scale = Vector2( 0.87, 0.7 )
+margin_left = -7.0
+margin_top = -8.0
+margin_right = 25.0
+margin_bottom = -2.0
+rect_rotation = 90.0
+rect_scale = Vector2( 0.5, 0.7 )
 max_value = 10000.0
 value = 10000.0
 texture_under = ExtResource( 2 )
