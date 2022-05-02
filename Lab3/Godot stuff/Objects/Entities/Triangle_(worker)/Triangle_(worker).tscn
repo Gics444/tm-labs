@@ -7,6 +7,7 @@
 
 [node name="Triange_(worker)" type="KinematicBody2D" groups=["Ally", "Worker"]]
 z_index = 1
+collision/safe_margin = 1.0
 script = ExtResource( 4 )
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
