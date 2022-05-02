@@ -1,6 +1,7 @@
 extends Control
 
 onready var pressed = $Structure1
+signal structure_selected(selected_number)
 
 func _ready() -> void:
 	for button in get_children():
@@ -10,6 +11,7 @@ func _on_Button_pressed(button: Button) -> void:
 	pressed.pressed = false
 	pressed = button
 	pressed.pressed = true
+	emit_signal("structure_selected", button.get_child(0).text)
 	
 func _input(event):
 	if event.is_action_pressed("1"):

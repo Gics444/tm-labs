@@ -1,19 +1,8 @@
 extends KinematicBody2D
 
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
 var movespeed = 300
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+var structure_number_selected = "1"
 
 func _physics_process(delta):
 	var motion = Vector2()
@@ -29,3 +18,19 @@ func _physics_process(delta):
 	
 	motion = motion.normalized()
 	motion = move_and_slide(motion * movespeed)
+	
+func _input(event):
+	if event.is_action_pressed("ui_select"):
+		if structure_number_selected == "1":
+			var structure = load("res://Objects/Structures/Pest_Deepnest/Pest_Deepnest.tscn").instance()
+			$"..".add_child(structure)
+			structure.position = position
+		elif structure_number_selected == "2":
+			var structure = load("res://Objects/Structures/The_Core/The_Core.tscn").instance()
+			$"..".add_child(structure)
+			structure.position = position
+			
+
+func _on_selected_structure(structure_number):
+	print(structure_number)
+	structure_number_selected = structure_number

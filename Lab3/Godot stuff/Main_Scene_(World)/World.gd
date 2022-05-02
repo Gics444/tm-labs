@@ -3,6 +3,7 @@ var spawn_count = 1
 
 func _ready():
 	randomize()
+	$Camera2D/CanvasLayer/UI/ButtonGroup.connect("structure_selected", $"Circle_(Player)", "_on_selected_structure")
 
 var pest_nest = preload("res://Objects/Structures/Pest_Deepnest/Pest_Deepnest.tscn")
 
