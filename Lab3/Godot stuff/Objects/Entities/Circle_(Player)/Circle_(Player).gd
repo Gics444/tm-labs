@@ -22,7 +22,7 @@ func _physics_process(delta):
 func _input(event):
 	if event.is_action_pressed("ui_select"):
 		if structure_number_selected == "1":
-			var structure = load("res://Objects/Structures/Pest_Deepnest/Pest_Deepnest.tscn").instance()
+			var structure = load("res://Objects/Entities/Pest/Pest.tscn").instance()
 			$"..".add_child(structure)
 			structure.position = position
 		elif structure_number_selected == "2":

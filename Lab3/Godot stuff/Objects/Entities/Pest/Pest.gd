@@ -26,9 +26,9 @@ func _ready():
 func _physics_process(delta):
 	var attack_obj = find_closest_or_furthest(self, "Ally")
 	var parent_poz = get_parent().position
-	position += (attack_obj.position - (position + parent_poz))/50
+	position += (attack_obj.position - (position + parent_poz))/500
 	look_at(attack_obj.position)
-	move_and_collide(motion)
+	var collision = move_and_collide(motion*delta)
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass

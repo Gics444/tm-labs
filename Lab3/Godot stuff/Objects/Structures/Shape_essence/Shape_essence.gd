@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends Area2D
 var assigned_worker = null
 
 # Declare member variables here. Examples:
@@ -14,3 +14,7 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
+
+
+func _on_Shape_essence_body_entered(body):
+	print(body)

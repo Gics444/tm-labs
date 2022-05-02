@@ -38,4 +38,8 @@ script = ExtResource( 7 )
 
 [node name="UI" parent="Camera2D/CanvasLayer" instance=ExtResource( 4 )]
 
+[node name="EssenceSpawnTimer" type="Timer" parent="."]
+autostart = true
+
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_SpawnTimer_timeout"]
+[connection signal="timeout" from="EssenceSpawnTimer" to="." method="_on_EssenceSpawnTimer_timeout"]

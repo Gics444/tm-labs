@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Main_Scene_(World)/ExpandingBack.png" type="Texture" id=1]
 [ext_resource path="res://Main_Scene_(World)/ExpandingBack.gd" type="Script" id=2]
@@ -6,6 +6,11 @@
 [sub_resource type="Curve2D" id=1]
 _data = {
 "points": PoolVector2Array( 0, 0, 0, 0, -14.6364, -18.6667, 0, 0, 0, 0, 2.18182, -26.4444, 0, 0, 0, 0, 17, -22, 0, 0, 0, 0, 25.7273, -5.39182, 0, 0, 0, 0, 19, 13.5556, 0, 0, 0, 0, 1.06061, 18.8187, 0, 0, 0, 0, -13.5152, 12.4444, 0, 0, 0, 0, -21.3636, -4.33918, 0, 0, 0, 0, -14.6364, -18.6667 )
+}
+
+[sub_resource type="Curve2D" id=2]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, -71, -24, 0, 0, 0, 0, -23, -22, 0, 0, 0, 0, -31, -68, 0, 0, 0, 0, 11, -36, 0, 0, 0, 0, 28, -72, 0, 0, 0, 0, 34, -25, 0, 0, 0, 0, 73, -38, 0, 0, 0, 0, 51, -6, 0, 0, 0, 0, 73, 20, 0, 0, 0, 0, 42, 26, 0, 0, 0, 0, 28, 71, 0, 0, 0, 0, 3, 42, 0, 0, 0, 0, -24, 73, 0, 0, 0, 0, -30, 33, 0, 0, 0, 0, -67, 44, 0, 0, 0, 0, -45, 15, 0, 0, 0, 0, -71, -24 )
 }
 
 [node name="Node2D" type="Node2D"]
@@ -33,5 +38,12 @@ curve = SubResource( 1 )
 [node name="PathFollow2D" type="PathFollow2D" parent="Path2D"]
 position = Vector2( -14.6364, -18.6667 )
 rotation = -0.433165
+
+[node name="EssenceSpawns" type="Path2D" parent="."]
+curve = SubResource( 2 )
+
+[node name="PathFollow2D" type="PathFollow2D" parent="EssenceSpawns"]
+position = Vector2( -71, -24 )
+rotation = 0.0416436
 
 [connection signal="timeout" from="ExpansionTimer" to="." method="_on_ExpansionTimer_timeout"]
