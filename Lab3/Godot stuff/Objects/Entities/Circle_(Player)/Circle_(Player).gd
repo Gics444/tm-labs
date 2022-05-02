@@ -3,6 +3,7 @@ extends KinematicBody2D
 var movespeed = 300
 
 var structure_number_selected = "1"
+var no_build_areas_entered = 0
 
 func _physics_process(delta):
 	var motion = Vector2()
@@ -20,7 +21,8 @@ func _physics_process(delta):
 	motion = move_and_slide(motion * movespeed)
 	
 func _input(event):
-	if event.is_action_pressed("ui_select"):
+	print(no_build_areas_entered)
+	if event.is_action_pressed("ui_select") && no_build_areas_entered == 0:
 		if structure_number_selected == "1":
 			var structure = load("res://Objects/Entities/Pest/Pest.tscn").instance()
 			$"..".add_child(structure)

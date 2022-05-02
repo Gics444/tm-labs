@@ -1,11 +1,10 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Objects/Structures/Pest_Deepnest/Pest_Deepnest.gd" type="Script" id=1]
+[ext_resource path="res://Common/No_building.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Objects/Structures/Pest_Deepnest/Sprite.gd" type="Script" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
-
-[sub_resource type="CircleShape2D" id=2]
 
 [node name="Pest_Deepnest" type="KinematicBody2D"]
 script = ExtResource( 1 )
@@ -22,10 +21,7 @@ script = ExtResource( 3 )
 wait_time = 3.0
 autostart = true
 
-[node name="NoBuildingRadius" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="NoBuildingRadius"]
-scale = Vector2( 8, 8 )
-shape = SubResource( 2 )
+[node name="NoBuilding" parent="." instance=ExtResource( 2 )]
+scale = Vector2( 10, 10 )
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
