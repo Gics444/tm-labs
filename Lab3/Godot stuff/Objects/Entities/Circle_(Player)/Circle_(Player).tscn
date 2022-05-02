@@ -6,7 +6,7 @@
 [sub_resource type="CircleShape2D" id=1]
 radius = 16.0
 
-[node name="Circle_(Player)" type="KinematicBody2D"]
+[node name="Circle_(Player)" type="KinematicBody2D" groups=["Player"]]
 position = Vector2( 512, 300 )
 script = ExtResource( 1 )
 

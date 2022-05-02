@@ -20,6 +20,9 @@ func _physics_process(delta):
 				bodies.shape_target = bodies.worker_poz.global_position
 				get_parent().essence_count -= 1
 				queue_free()
+		if bodies.is_in_group("Player"):
+			get_parent().essence_count -= 1
+			queue_free()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass

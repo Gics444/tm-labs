@@ -21,7 +21,7 @@ func _physics_process(delta):
 	motion = move_and_slide(motion * movespeed)
 	
 func _input(event):
-	print(no_build_areas_entered)
+	#print(no_build_areas_entered)
 	if event.is_action_pressed("ui_select") && no_build_areas_entered == 0:
 		if structure_number_selected == "1":
 			var structure = load("res://Objects/Entities/Pest/Pest.tscn").instance()
@@ -34,5 +34,5 @@ func _input(event):
 			
 
 func _on_selected_structure(structure_number):
-	print(structure_number)
+	#print(structure_number)
 	structure_number_selected = structure_number

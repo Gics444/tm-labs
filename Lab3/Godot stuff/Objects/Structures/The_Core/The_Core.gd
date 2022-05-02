@@ -15,9 +15,14 @@ func _physics_process(delta):
 	for bodies in core_hitbox.get_overlapping_bodies():
 		if bodies.is_in_group("Enemy"):
 			take_dmg_from_pest(delta)
+	if $TextureProgress.value <= 0:
+		dead()
 	
 func take_dmg_from_pest(delta):
 	$TextureProgress.value = $TextureProgress.value - 1
+	
+func dead():
+	queue_free()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
