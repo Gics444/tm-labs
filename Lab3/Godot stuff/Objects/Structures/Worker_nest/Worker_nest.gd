@@ -37,6 +37,7 @@ func _physics_process(delta):
 					free_worker = null
 				if free_worker != null:
 					se.assigned_worker = free_worker
+					se.nest_radius_node = get_node("Collecting_area")
 					free_worker.shape_target = se.global_position
 					
 func take_dmg_from_pest(delta):

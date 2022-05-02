@@ -1,6 +1,7 @@
 extends KinematicBody2D
 var assigned_worker = null
 var valid = true
+var nest_radius_node = null
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -17,10 +18,17 @@ func _physics_process(delta):
 			if bodies.is_in_group("Worker"):
 				valid = false
 				assigned_worker = null
-				bodies.shape_target = bodies.worker_poz.global_position
+				for triangles in nest_radius_node.get_overlapping_bodies():
+					if triangles.is_in_group("Worker"):
+						triangles.shape_target = triangles.worker_poz.global_position
 				get_parent().essence_count -= 1
 				queue_free()
 		if bodies.is_in_group("Player"):
+			for triangles in nest_radius_node.get_overlapping_bodies():
+				if triangles.is_in_group("Worker"):
+					triangles.shape_target = triangles.worker_poz.global_position
+			valid = false
+			assigned_worker = null
 			get_parent().essence_count -= 1
 			queue_free()
 # Called every frame. 'delta' is the elapsed time since the previous frame.

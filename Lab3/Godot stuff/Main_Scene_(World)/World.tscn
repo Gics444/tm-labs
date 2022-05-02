@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Objects/Entities/Circle_(Player)/Circle_(Player).tscn" type="PackedScene" id=1]
 [ext_resource path="res://Objects/Structures/The_Core/The_Core.tscn" type="PackedScene" id=2]
@@ -7,7 +7,6 @@
 [ext_resource path="res://Main_Scene_(World)/World.gd" type="Script" id=5]
 [ext_resource path="res://Main_Scene_(World)/ExpandingBack.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Main_Scene_(World)/Camera.gd" type="Script" id=7]
-[ext_resource path="res://Objects/Structures/Worker_nest/Worker_nest.tscn" type="PackedScene" id=8]
 
 [node name="The World" type="Node2D"]
 script = ExtResource( 5 )
@@ -41,9 +40,6 @@ script = ExtResource( 7 )
 
 [node name="EssenceSpawnTimer" type="Timer" parent="."]
 autostart = true
-
-[node name="Worker_nest" parent="." instance=ExtResource( 8 )]
-position = Vector2( 304, 343 )
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_SpawnTimer_timeout"]
 [connection signal="timeout" from="EssenceSpawnTimer" to="." method="_on_EssenceSpawnTimer_timeout"]
