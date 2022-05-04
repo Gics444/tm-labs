@@ -18,3 +18,8 @@ func _input(event):
 		$Structure1.emit_signal("pressed")
 	if event.is_action_pressed("2"):
 		$Structure2.emit_signal("pressed")
+	if event.is_action_pressed("3"):
+		$Structure3.emit_signal("pressed")
+
+func _on_spell_cost_increase(num):
+	$Structure3/Label.text = "3: " + str(num)

@@ -4,7 +4,7 @@ extends KinematicBody2D
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-var rng = RandomNumberGenerator.new()
+onready var rng = RandomNumberGenerator.new()
 var spawn_chance = 5
 var pest_count = 1
 
@@ -20,6 +20,7 @@ func spawn_pest(count):
 		count -= 1
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	randomize()
 	spawn_chance = int(rng.randf_range(5, 25))
 
 func _on_Timer_timeout():
@@ -28,4 +29,5 @@ func _on_Timer_timeout():
 		pest_count = 1
 	else:
 		pest_count += 1
+		spawn_chance = int(rng.randf_range(5, 25))
 	

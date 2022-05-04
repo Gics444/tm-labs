@@ -1,9 +1,9 @@
 extends Sprite
 
 export(Array, Texture) var TEXTURE_VARIATION_ARRAY: Array =[
-	preload("res://Objects/Structures/Pest_Deepnest/Pest_deepnest_1.png"),
-	preload("res://Objects/Structures/Pest_Deepnest/Pest_deepnest_2.png"),
-	preload("res://Objects/Structures/Pest_Deepnest/Pest_deepnest_3.png")
+	preload("res://Objects/Structures/Pest_Deepnest/pest1.png"),
+	preload("res://Objects/Structures/Pest_Deepnest/pest2.png"),
+	preload("res://Objects/Structures/Pest_Deepnest/pest3.png")
 ]
 # Declare member variables here. Examples:
 # var a = 2

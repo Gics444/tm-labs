@@ -7,7 +7,7 @@
 
 [sub_resource type="CircleShape2D" id=2]
 
-[node name="Shape_essence" type="KinematicBody2D"]
+[node name="Shape_essence" type="KinematicBody2D" groups=["Essence"]]
 scale = Vector2( 2, 2 )
 script = ExtResource( 2 )
 
@@ -23,5 +23,5 @@ disabled = true
 
 [node name="Shape_area" type="Area2D" parent="." groups=["Shape_essence"]]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Shape_area"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Shape_area" groups=["Essence"]]
 shape = SubResource( 2 )
